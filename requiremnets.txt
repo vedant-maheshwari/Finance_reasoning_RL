@@ -1,0 +1,7 @@
+pandas
+torch
+transformers
+datasets
+trl
+peft
+accelerate
