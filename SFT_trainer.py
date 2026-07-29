@@ -1,8 +1,8 @@
 import torch
 from datasets import load_dataset
-from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments
+from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import LoraConfig, get_peft_model
-from trl import SFTTrainer
+from trl import SFTTrainer, SFTConfig
 
 MODEL_ID = "Qwen/Qwen2.5-1.5B-Instruct"
 DATASET_PATH = 'SFT_train_formatted.json'
@@ -21,7 +21,7 @@ model = AutoModelForCausalLM.from_pretrained(
     torch_dtype = torch.bfloat16 if device.type == 'cuda' and torch.cuda.is_bf16_supported() else torch.float32,
     device_map = "auto"
 )
-model.to(device)    
+# model.to(device)    
 
 lora_config = LoraConfig(
     r=16,
@@ -34,7 +34,7 @@ lora_config = LoraConfig(
 
 model = get_peft_model(model, lora_config)
 
-training_args = TrainingArguments(
+training_args = SFTConfig(
     output_dir = OUTPUT_DIR,
     per_device_train_batch_size=4,
     gradient_accumulation_steps=4,
@@ -43,7 +43,10 @@ training_args = TrainingArguments(
     num_train_epochs=1,
     save_strategy='epoch',
     fp16=False,
-    bf16=False
+    bf16=False,
+    dataset_text_field="text",
+    max_length=1024,
+    loss_type="nll",
 )
 
 def format_chat_template(example):
@@ -57,8 +60,6 @@ dataset = dataset.map(format_chat_template)
 trainer = SFTTrainer(
     model = model,
     train_dataset = dataset,
-    dataset_text_field="text",
-    max_seq_length=1024,
     args=training_args
 )
 
