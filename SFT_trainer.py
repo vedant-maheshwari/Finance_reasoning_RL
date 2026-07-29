@@ -1,6 +1,6 @@
 import torch
-from dataset import load_dataset
-from tranformer import AutoModelForCausalLM, AutoTokenizer, TrainingArguments
+from datasets import load_dataset
+from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments
 from peft import LoraConfig, get_peft_model
 from trl import SFTTrainer
 
@@ -11,8 +11,8 @@ OUTPUT_DIR = './FinQA-SFT-finetuned'
 dataset = load_dataset('json', data_files=DATASET_PATH, split = "train")
 
 tokenizer = AutoTokenizer.from_pretrained(MODEL_ID)
-if tokenizer.pad_tokens is None:
-    tokenizer.pad_tokens = tokenizer.eos_token
+if tokenizer.pad_token is None:
+    tokenizer.pad_token = tokenizer.eos_token
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -37,7 +37,7 @@ model = get_peft_model(model, lora_config)
 training_args = TrainingArguments(
     output_dir = OUTPUT_DIR,
     per_device_train_batch_size=4,
-    gradient_accumulation_step=4,
+    gradient_accumulation_steps=4,
     learning_rate=2e-4,
     logging_steps=10,
     num_train_epochs=1,
@@ -48,7 +48,7 @@ training_args = TrainingArguments(
 
 def format_chat_template(example):
     example['text'] = tokenizer.apply_chat_template(example['messages'],
-                                                    tokenizer=False,
+                                                    tokenize=False,
                                                     add_generation_prompt=False)
     return example
 
