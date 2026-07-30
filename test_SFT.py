@@ -1,5 +1,5 @@
 import torch
-from transformer import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import PeftModel 
 
 MODEL_ID = "Qwen/Qwen2.5-1.5B-Instruct"
@@ -9,7 +9,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f'you are running on {device}')
 
 tokenizer = AutoTokenizer.from_pretrained(MODEL_ID)
-base_model = AutoModelForCausalLM(MODEL_ID,
+base_model = AutoModelForCausalLM.from_pretrained(MODEL_ID,
                                 dtype=torch.bfloat16,
                                 device_map='auto')
 
@@ -38,7 +38,7 @@ text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_pr
 inputs = tokenizer(text, return_tensors="pt").to(model.device)
 
 #generation
-ouputs = model.generate(
+outputs = model.generate(
     **inputs,
     max_new_tokens = 256,
     do_sample = True,
@@ -48,5 +48,5 @@ ouputs = model.generate(
     pad_token_id = tokenizer.pad_token_id
 )
 
-response = tokenizer.decode(ouputs[0], skip_special_tokens=True)
+response = tokenizer.decode(outputs[0], skip_special_tokens=True)
 print(response)
