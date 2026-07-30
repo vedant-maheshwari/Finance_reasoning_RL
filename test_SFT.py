@@ -16,7 +16,23 @@ base_model = AutoModelForCausalLM(MODEL_ID,
 model = PeftModel.from_pretrained(base_model, LoRA_ADAPTER_PATH)
 
 #test prompt
-prompt = "You are a financial analyst.\n\nContext:\nRevenue in 2014 was $500. Revenue in 2015 was $600.\n\nQuestion: What is the total revenue?"
+# prompt = "You are a financial analyst.\n\nContext:\nRevenue in 2014 was $500. Revenue in 2015 was $600.\n\nQuestion: What is the total revenue?"
+
+prompt = """interest rate to a variable interest rate based on the three-month libor plus 2.05% ( 2.05 % ) ( 2.34% ( 2.34 % ) as of october 31 , 2009 ) .if libor changes by 100 basis points , our annual interest expense would change by $ 3.8 million .foreign currency exposure as more fully described in note 2i .in the notes to consolidated financial statements contained in item 8 of this annual report on form 10-k , we regularly hedge our non-u.s .dollar-based exposures by entering into forward foreign currency exchange contracts .the terms of these contracts are for periods matching the duration of the underlying exposure and generally range from one month to twelve months .currently , our largest foreign currency exposure is the euro , primarily because our european operations have the highest proportion of our local currency denominated expenses .relative to foreign currency exposures existing at october 31 , 2009 and november 1 , 2008 , a 10% ( 10 % ) unfavorable movement in foreign currency exchange rates over the course of the year would not expose us to significant losses in earnings or cash flows because we hedge a high proportion of our year-end exposures against fluctuations in foreign currency exchange rates .the market risk associated with our derivative instruments results from currency exchange rate or interest rate movements that are expected to offset the market risk of the underlying transactions , assets and liabilities being hedged .the counterparties to the agreements relating to our foreign exchange instruments consist of a number of major international financial institutions with high credit ratings .we do not believe that there is significant risk of nonperformance by these counterparties because we continually monitor the credit ratings of such counterparties .while the contract or notional amounts of derivative financial instruments provide one measure of the volume of these transactions , they do not represent the amount of our exposure to credit risk .the amounts potentially subject to credit risk ( arising from the possible inability of counterparties to meet the terms of their contracts ) are generally limited to the amounts , if any , by which the counterparties 2019 obligations under the contracts exceed our obligations to the counterparties .the following table illustrates the effect that a 10% ( 10 % ) unfavorable or favorable movement in foreign currency exchange rates , relative to the u.s .dollar , would have on the fair value of our forward exchange contracts as of october 31 , 2009 and november 1 , 2008: . 
+
+ |october 31 2009|november 1 2008|
+fair value of forward exchange contracts asset ( liability )|$ 6427|$ -23158 ( 23158 )|
+fair value of forward exchange contracts after a 10% ( 10 % ) unfavorable movement in foreign currency exchange rates asset ( liability )|$ 20132|$ -9457 ( 9457 )|
+fair value of forward exchange contracts after a 10% ( 10 % ) favorable movement in foreign currency exchange rates liability|$ -6781 ( 6781 )|$ -38294 ( 38294 )|
+ 
+
+ fair value of forward exchange contracts after a 10% ( 10 % ) unfavorable movement in foreign currency exchange rates asset ( liability ) .........$ 20132 $ ( 9457 ) fair value of forward exchange contracts after a 10% ( 10 % ) favorable movement in foreign currency exchange rates liability ......................$ ( 6781 ) $ ( 38294 ) the calculation assumes that each exchange rate would change in the same direction relative to the u.s .dollar .in addition to the direct effects of changes in exchange rates , such changes typically affect the volume of sales or the foreign currency sales price as competitors 2019 products become more or less attractive .our sensitivity analysis of the effects of changes in foreign currency exchange rates does not factor in a potential change in sales levels or local currency selling prices. . 
+
+ Question: what is the the interest expense in 2009? 
+
+ """
+
+
 messages = [{"role": "user", "content": prompt}]
 text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
 inputs = tokenizer(text, return_tensors="pt").to(model.device)
@@ -34,4 +50,3 @@ ouputs = model.generate(
 
 response = tokenizer.decode(ouputs[0], skip_special_tokens=True)
 print(response)
-        
