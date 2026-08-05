@@ -37,7 +37,7 @@ This model was trained with SFT.
 
 - TRL: 1.9.2
 - Transformers: 5.14.1
-- Pytorch: 2.10.0+cu128
+- Pytorch: 2.8.0+cu128
 - Datasets: 5.0.1
 - Tokenizers: 0.22.2
 
