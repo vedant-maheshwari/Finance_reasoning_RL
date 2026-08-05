@@ -44,8 +44,11 @@ training_args = GRPOConfig(
     per_device_train_batch_size=1, # Keep tiny for 1.5B model + 8 generations
     gradient_accumulation_steps=4,
     num_generations=8,             # Generate 8 answers per question
+    generation_batch_size=8,
     max_completion_length=256,
     beta=0.04,                     # KL penalty weight
+    use_cpu=(device.type == "cpu"),
+    bf16=(device.type == "cuda" and torch.cuda.is_bf16_supported()),
 )
 
 trainer = GRPOTrainer(
