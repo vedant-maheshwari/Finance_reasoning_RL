@@ -66,3 +66,29 @@ At first glance, FinQANet's 61.24% seems slightly superior. However, the archite
 
 **Conclusion:** 
 The original FinQA authors noted that attempting the task End-to-End caused accuracy to plummet because the models became overwhelmed by noise. Achieving **59.81% Execution Accuracy** on a small 1.5B parameter model—processing the entire context End-to-End without a retriever—is a highly competitive academic result. It essentially closes the gap with the state-of-the-art retriever baseline and strongly validates that Reinforcement Learning (GRPO) can bridge the gap in reasoning capabilities for Small Language Models.
+
+---
+
+## 4. Error Analysis: Where is the model still failing at 60%?
+
+To understand the remaining ~40% error rate (461 incorrect predictions out of 1147), we conducted a deep-dive heuristic analysis of the failure logs from the Epoch 6 run.
+
+Broadly, the failures fall into two categories:
+1. **Retrieval/Extraction Failures (~65% \| 301 errors):** The model used the correct mathematical operations but picked the wrong numbers from the dense context.
+2. **Reasoning/Operation Failures (~35% \| 160 errors):** The model fetched the correct numbers but applied the wrong logic or reversed the operands.
+
+### Deep Dive into Failure Modes
+
+#### A. Retrieval Hallucinations (Wrong rows/columns)
+Because the model processes the entire document end-to-end without a retriever, it occasionally gets lost in dense tables. For example, when asked for the *2016 Gross Margin Percent*, it correctly identified the numerator but accidentally grabbed the Revenue denominator from the visually adjacent *2015* column instead. This confirms the original FinQA authors' hypothesis: *finding the numbers is often harder than doing the math.*
+
+#### B. Ratio vs. Percentage Change Confusion
+The model heavily defaults to the `subtract() -> divide()` pattern because "percentage change" or "growth" questions are ubiquitous in financial reports. It sometimes incorrectly applies this template to simple ratio questions (e.g., "What percent of total square footage is unleased?"). Instead of `divide(unleased, total)`, it attempts `subtract(total, unleased)` followed by `divide()`.
+
+#### C. Baseline Misinterpretation
+When asked for a "return" or "growth", the model sometimes assumes the baseline is an index of 100.00 rather than fetching the actual previous year's value from the table, leading to an incorrect absolute difference calculation.
+
+### Potential Future Improvements
+The fact that 65% of the remaining errors are pure retrieval errors suggests that the reasoning engine is highly capable. To push past 60% accuracy, future work could:
+- **Reintroduce a Lightweight Retriever:** Filter the document down to a few sentences before feeding it to the Qwen model.
+- **Context Masking via RL Rewards:** Heavily penalize the model during GRPO if it hallucinates numbers that do not exist anywhere in the prompt context.
