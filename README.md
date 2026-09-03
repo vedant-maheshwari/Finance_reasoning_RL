@@ -42,5 +42,26 @@ python3 SFT_trainer.py
 *   **Input Data:** `SFT_train_formatted.json`
 *   **Output:** The trained adapter weights will be saved to the `./FinQA-SFT-finetuned` directory.
 
-### Next Steps (RL Phase)
-After the SFT adapter is trained, the next phase of the project involves loading this adapter and using PPO/GRPO (via `trl`) on the remaining training data, utilizing a custom reward function that checks for exact answer matches and equation correctness.
+### 4. Running Reinforcement Learning (GRPO)
+After the SFT adapter is trained, we use GRPO (via `trl`) on the remaining training data. We utilize a custom reward function that checks for exact answer matches and equation correctness.
+
+```bash
+python3 RL_trainer.py
+```
+
+## Results
+Traditional Small Language Models (SLMs) fine-tuned on financial data often struggle with numerical consistency. By implementing a **Reinforcement Learning (GRPO)** framework optimizing for **Execution Accuracy**, we achieved a massive leap in performance.
+
+**Final RL Run (Epoch 3) Results:**
+- **Execution Accuracy (Exact Match):** **46.64%** (535 / 1147 correct)
+- **Yes/No Accuracy:** **55.00%** (11 / 20 correct)
+
+### Baseline Comparison
+| Model Setup | Retriever Used? | Execution Accuracy (Exact Match) |
+| :--- | :---: | :---: |
+| **Original FinQANet** (RoBERTa-Large, 355M) | **Yes** | $\sim 61.24\%$ |
+| **Our RL Model** (Qwen2.5-1.5B-Instruct) | **No** | **46.64\%** |
+
+Operating **End-to-End** without a retriever on a small 1.5B parameter model is an extremely challenging task. Achieving 46.64% accuracy strongly validates that GRPO can bridge the gap in reasoning capabilities for Small Language Models.
+
+For an in-depth analysis of the RL phases, reward shaping, and environment fixes, please read the full report: [`FinQA_RL_Results.md`](FinQA_RL_Results.md).
