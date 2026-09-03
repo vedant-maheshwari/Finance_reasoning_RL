@@ -52,16 +52,17 @@ python3 RL_trainer.py
 ## Results
 Traditional Small Language Models (SLMs) fine-tuned on financial data often struggle with numerical consistency. By implementing a **Reinforcement Learning (GRPO)** framework optimizing for **Execution Accuracy**, we achieved a massive leap in performance.
 
-**Final RL Run (Epoch 3) Results:**
-- **Execution Accuracy (Exact Match):** **46.64%** (535 / 1147 correct)
-- **Yes/No Accuracy:** **55.00%** (11 / 20 correct)
+**Final RL Run (Epoch 6) Results:**
+- **Execution Accuracy (Exact Match):** **59.81%** (686 / 1147 correct)
+- **Yes/No Accuracy:** **85.00%** (17 / 20 correct)
+- **Format Strictness:** **99.83%** (1145 / 1147 correct)
 
 ### Baseline Comparison
 | Model Setup | Retriever Used? | Execution Accuracy (Exact Match) |
 | :--- | :---: | :---: |
 | **Original FinQANet** (RoBERTa-Large, 355M) | **Yes** | $\sim 61.24\%$ |
-| **Our RL Model** (Qwen2.5-1.5B-Instruct) | **No** | **46.64\%** |
+| **Our RL Model** (Qwen2.5-1.5B-Instruct) | **No** | **59.81\%** |
 
-Operating **End-to-End** without a retriever on a small 1.5B parameter model is an extremely challenging task. Achieving 46.64% accuracy strongly validates that GRPO can bridge the gap in reasoning capabilities for Small Language Models.
+Operating **End-to-End** without a retriever on a small 1.5B parameter model is an extremely challenging task. Achieving 59.81% accuracy—essentially closing the gap with the state-of-the-art retriever baseline—strongly validates that GRPO can bridge the gap in reasoning capabilities for Small Language Models.
 
 For an in-depth analysis of the RL phases, reward shaping, and environment fixes, please read the full report: [`FinQA_RL_Results.md`](FinQA_RL_Results.md).

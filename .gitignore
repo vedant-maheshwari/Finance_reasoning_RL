@@ -1,1 +1,21 @@
 RL_project/
+.DS_Store
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+# Model Weights & Adapters (Do NOT push to GitHub)
+FinQA-SFT-finetuned/
+checkpoint-*/
+*.safetensors
+*.bin
+*.pt
+# Large Generated Data & Results
+eval_results_*.json
+__huggingface_repos__.json
